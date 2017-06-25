@@ -3,10 +3,14 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const config = require('./services/config.js');
+const socketIo = require('socket.io');
+const sockets = require('./middlewares/sockets.js');
 const bodyParser = require('body-parser');
 
 const app = express();
 const server = new http.Server(app);
+const io = socketIo(server);
+sockets(io);
 
 app.use(cors());
 app.options('*', cors());
@@ -28,4 +32,9 @@ connect()
   .on('disconnected', connect)
   .once('open', listen);
 
-app.use('/api/articles', require('./routes/articles.js'));
+// ROUTES
+app.use('/api/rooms', require('./routes/rooms.js'));
+app.use('/api/authenticate', require('./routes/authenticate.js'));
+app.use('/api/register', require('./routes/register.js'));
+app.use('/api/contacts', require('./routes/contacts.js'));
+app.use('/api/settings', require('./routes/user.js'));

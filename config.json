@@ -1,6 +1,11 @@
 {
   "port": 3000,
   "mongodb": {
-    "uri": "mongodb://localhost/dbcovargo"
-  }
+    "uri": "mongodb://localhost/battleshipdb"
+  },
+  "security": {
+    "tokenLife" : 3600,
+    "secret": "9c072c1f39c44656a63435e4fa83abfe"
+  },
+  "defaultRoom": "594eeac398890b1db050aa6d"
 }
