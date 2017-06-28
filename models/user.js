@@ -27,7 +27,9 @@ const User = new Schema({
     },
     ref: this,
   }],
-  status: String,
+  games: Number,
+  wins: Number,
+  looses: Number,
   registrationDate: {
     default: new Date(),
     type: Date,

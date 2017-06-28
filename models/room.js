@@ -19,6 +19,9 @@ const Room = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'User',
   },
+  winner: Schema.Types.ObjectId,
+  roundPlayed: Number,
+  timePlayed: Number,
   lastMessage: Date,
 }, {
   collection: 'rooms',

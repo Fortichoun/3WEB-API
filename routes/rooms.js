@@ -14,16 +14,7 @@ router.get('/', (req, res) => {
   const { query } = req;
   co(function* () {
     const rooms = yield Room.find({ typeOfRoom: query.typeOfRoom });
-
-    // .sort({ lastMessage: -1 });
-    // if (query.typeOfRoom === 'channels') {
-    //   const roomsUserIsNotIn = yield Room.find({ typeOfRoom: query.typeOfRoom, 'users._id': { $ne: query.userId } })
-    //     .sort({ lastMessage: -1 });
-    //   if (rooms.length === 0) rooms = roomsUserIsNotIn;
-    //   else if (roomsUserIsNotIn.length !== 0) rooms = rooms.concat(roomsUserIsNotIn);
-    // }
     yield Room.populate(rooms, { path: 'creator' });
-    console.log(rooms);
     res.json(rooms);
   });
 });
