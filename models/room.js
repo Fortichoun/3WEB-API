@@ -15,6 +15,10 @@ const Room = new Schema({
     default: new Date(),
     type: Date,
   },
+  creator: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+  },
   lastMessage: Date,
 }, {
   collection: 'rooms',

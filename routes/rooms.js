@@ -13,14 +13,17 @@ const router = express.Router();
 router.get('/', (req, res) => {
   const { query } = req;
   co(function* () {
-    let rooms = yield Room.find({ 'users._id': query.userId, typeOfRoom: query.typeOfRoom })
-      .sort({ lastMessage: -1 });
-    if (query.typeOfRoom === 'channels') {
-      const roomsUserIsNotIn = yield Room.find({ typeOfRoom: query.typeOfRoom, 'users._id': { $ne: query.userId } })
-        .sort({ lastMessage: -1 });
-      if (rooms.length === 0) rooms = roomsUserIsNotIn;
-      else if (roomsUserIsNotIn.length !== 0) rooms = rooms.concat(roomsUserIsNotIn);
-    }
+    const rooms = yield Room.find({ typeOfRoom: query.typeOfRoom });
+
+    // .sort({ lastMessage: -1 });
+    // if (query.typeOfRoom === 'channels') {
+    //   const roomsUserIsNotIn = yield Room.find({ typeOfRoom: query.typeOfRoom, 'users._id': { $ne: query.userId } })
+    //     .sort({ lastMessage: -1 });
+    //   if (rooms.length === 0) rooms = roomsUserIsNotIn;
+    //   else if (roomsUserIsNotIn.length !== 0) rooms = rooms.concat(roomsUserIsNotIn);
+    // }
+    yield Room.populate(rooms, { path: 'creator' });
+    console.log(rooms);
     res.json(rooms);
   });
 });
@@ -36,24 +39,25 @@ router.get('/messages', (req, res) => {
 });
 
 // POST on /api/rooms
-// Handle the creation of a new group / channel / private conversation
+// Handle the creation of a new game / private conversation
 router.post('/', (req, res) => {
   const { body } = req;
   co(function* () {
     let room = null;
     const users = [body.user];
-    body.usersInRoom.map(user => users.push(user));
     if (body.typeOfRoom === 'contacts') {
       room = yield Room.findOne({ typeOfRoom: body.typeOfRoom, 'users._id': { $all: users } });
+    }
+    if (body.typeOfRoom === 'games') {
+      room = yield Room.findOne({ typeOfRoom: body.typeOfRoom, creator: body.user });
     }
     if (!room) {
       room = new Room({
         name: body.roomName,
         typeOfRoom: body.typeOfRoom,
+        creator: body.user,
       });
       room.users.push(body.user);
-      body.usersInRoom.map(user => room.users.push(user));
-      if (body.typeOfRoom !== 'contacts') room.moderators.push(body.user);
       yield room.save();
     }
     res.json(room);
